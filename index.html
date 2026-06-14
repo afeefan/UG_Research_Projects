@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UG Research Projects — PHP + Python</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f7f6f3; --surface: #ffffff;
+    --border: rgba(0,0,0,0.1); --border-soft: rgba(0,0,0,0.07);
+    --text-primary: #1a1a18; --text-secondary: #5f5e5a; --text-muted: #888780;
+    --purple-bg: #EEEDFE; --purple-text: #3C3489; --purple-border: #AFA9EC;
+    --blue-bg: #E6F1FB; --blue-text: #0C447C;
+    --green-bg: #EAF3DE; --green-text: #3B6D11;
+    --amber-bg: #FAEEDA; --amber-text: #633806;
+    --coral-bg: #FAECE7; --coral-text: #712B13; --coral-border: #F0997B;
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.6; min-height: 100vh; }
+  .header-wrap { background: var(--surface); border-bottom: 0.5px solid var(--border); }
+  header { max-width: 1100px; margin: 0 auto; padding: 2rem 2rem 1.5rem; }
+  .header-eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--purple-text); margin-bottom: 6px; font-weight: 500; }
+  header h1 { font-size: 26px; font-weight: 600; margin-bottom: 6px; }
+  header p { font-size: 14px; color: var(--text-secondary); max-width: 560px; }
+  .main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-btn { font-size: 13px; padding: 5px 16px; border-radius: 20px; border: 0.5px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; transition: all .15s; font-family: inherit; }
+  .filter-btn:hover { border-color: rgba(0,0,0,.2); }
+  .filter-btn.active { background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+  .card { background: var(--surface); border: 0.5px solid var(--border-soft); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem 1rem; display: flex; flex-direction: column; gap: 10px; transition: box-shadow .15s, border-color .15s; }
+  .card:hover { border-color: var(--border); box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .card-top { display: flex; align-items: flex-start; gap: 10px; }
+  .icon-wrap { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 19px; }
+  .card-title { font-size: 14px; font-weight: 600; line-height: 1.35; }
+  .card-domain { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+  .card-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+  .tech-row { display: flex; gap: 5px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+  .php-badge { background: var(--blue-bg); color: var(--blue-text); }
+  .py-badge { background: var(--green-bg); color: var(--green-text); }
+  .db-badge { background: var(--amber-bg); color: var(--amber-text); }
+  .explore-btn { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-md); font-size: 13px; color: var(--text-secondary); cursor: pointer; font-family: inherit; transition: background .15s, color .15s, border-color .15s; width: 100%; margin-top: auto; }
+  .explore-btn:hover { background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border); }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.38); z-index: 100; align-items: flex-start; justify-content: center; padding: 3rem 1rem 1rem; overflow-y: auto; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius-lg); border: 0.5px solid var(--border); width: 100%; max-width: 660px; margin: auto; }
+  .modal-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border-soft); gap: 12px; }
+  .modal-title { font-size: 16px; font-weight: 600; }
+  .modal-subtitle { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 3px; }
+  .modal-close { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 20px; padding: 2px; border-radius: 4px; font-family: inherit; flex-shrink: 0; }
+  .modal-close:hover { color: var(--text-primary); }
+  .modal-body { padding: 1.25rem 1.5rem; }
+  .guide h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-top: 1.2rem; margin-bottom: 5px; padding-bottom: 3px; border-bottom: 0.5px solid var(--border-soft); }
+  .guide h3:first-child { margin-top: 0; }
+  .guide p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 6px; }
+  .guide ul { font-size: 13px; color: var(--text-secondary); line-height: 1.7; padding-left: 1.2rem; margin-bottom: 8px; }
+  .guide li { margin-bottom: 3px; }
+  .guide strong { color: var(--text-primary); font-weight: 600; }
+  .venue-tag { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 4px; background: var(--purple-bg); color: var(--purple-text); margin: 2px 3px 2px 0; }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 0.5px solid var(--border-soft); display: flex; justify-content: flex-end; }
+  .btn-close { font-size: 13px; padding: 7px 18px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: inherit; }
+  .btn-close:hover { background: var(--bg); }
+  @media (max-width: 600px) { header, .main { padding-left: 1rem; padding-right: 1rem; } header h1 { font-size: 21px; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header-wrap">
+  <header>
+    <div class="header-eyebrow">Undergraduate Research Projects</div>
+    <h1>PHP + Python Project Ideas</h1>
+    <p>12 project proposals for students with PHP (front end) and Python (ML / NLP / CV backend). Click <em>Explore this project</em> on any card for a full guide.</p>
+  </header>
+</div>
+
+<div class="main">
+  <div class="filters">
+    <button class="filter-btn active" onclick="filter('all',this)">All projects</button>
+    <button class="filter-btn" onclick="filter('health',this)">Health</button>
+    <button class="filter-btn" onclick="filter('education',this)">Education</button>
+    <button class="filter-btn" onclick="filter('social',this)">Social</button>
+    <button class="filter-btn" onclick="filter('security',this)">Security</button>
+    <button class="filter-btn" onclick="filter('nlp',this)">NLP</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="modal-overlay" id="overlay" onclick="bgClose(event)">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="m-title"></div>
+        <div class="modal-subtitle" id="m-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body"><div class="guide" id="m-body"></div></div>
+    <div class="modal-footer"><button class="btn-close" onclick="closeModal()">Close</button></div>
+  </div>
+</div>
+
+<script>
+const projects = [
+  {
+    title: "Mental Health Self-Assessment Portal",
+    domain: "health", domainLabel: "Health",
+    icon: "ti-heart-handshake", iconBg: "#FBEAF0", iconColor: "#993556",
+    desc: "PHP web portal where students fill mental health questionnaires; Python backend scores responses using ML (SVM / logistic regression) and suggests resources.",
+    php: ["Forms, sessions, dashboard"], py: ["Scikit-learn scoring","Flask REST API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>Build a web portal where students fill standardised mental health questionnaires (e.g., PHQ-9 for depression, GAD-7 for anxiety). PHP handles the UI, login, and history display; Python scores the responses using a trained ML model and returns a risk level with resource suggestions via a Flask REST API.</p>
+      <h3>Research Objective</h3>
+      <p>Compare ML classifiers (Logistic Regression, SVM, Random Forest) for predicting mental health risk levels from self-reported questionnaire data, and evaluate which best balances accuracy and interpretability for a campus deployment.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>DASS-21 public responses</strong> — available on Kaggle (depression, anxiety, stress scales)</li>
+        <li><strong>PHQ-9 / GAD-7 datasets</strong> — searchable on UCI ML Repository and Harvard Dataverse</li>
+        <li><strong>Self-collected</strong> — administer questionnaires to college students with ethics clearance</li>
+      </ul>
+      <h3>ML Model Recommendation</h3>
+      <ul>
+        <li>Start with <strong>Logistic Regression</strong> — interpretable, good for ordinal questionnaire scores</li>
+        <li>Compare with <strong>SVM (RBF kernel)</strong> and <strong>Random Forest</strong></li>
+        <li>Use scikit-learn; report accuracy, F1-score, and confusion matrix for each</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>Python runs a <strong>Flask API</strong> on <code>localhost:5000</code></li>
+        <li>PHP sends questionnaire scores as JSON via <code>curl_exec()</code></li>
+        <li>Flask returns <code>{"risk_level": "moderate", "suggestions": [...]}</code></li>
+        <li>PHP displays the result and stores history in MySQL</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Student login and questionnaire form (PHP)</li>
+        <li>Score history and trend graph (Chart.js in PHP)</li>
+        <li>Resource suggestion panel (counsellor links, helplines)</li>
+        <li>Admin dashboard to view anonymised trends</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Comparative evaluation of ML classifiers on student mental health data; design of a privacy-respecting, locally deployed screening tool for Indian college contexts.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">IEEE ICHI (Health Informatics)</span>
+      <span class="venue-tag">Springer LNNS Proceedings</span>
+      <span class="venue-tag">IJCA (zero APC)</span>
+      <span class="venue-tag">ICIETS 2027</span>
+    `
+  },
+  {
+    title: "Fake News Detector",
+    domain: "nlp", domainLabel: "NLP",
+    icon: "ti-news", iconBg: "#EEEDFE", iconColor: "#534AB7",
+    desc: "Users paste a news article URL or text into a PHP page; Python NLP model classifies it as real/fake with a confidence score.",
+    php: ["Input forms, result display, history log"], py: ["Text preprocessing","Classification","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP web interface lets users paste news text or a URL; PHP sends the text to a Python Flask API that preprocesses and classifies it as real or fake, returning a label and confidence percentage.</p>
+      <h3>Research Objective</h3>
+      <p>Evaluate and compare classical NLP approaches (TF-IDF + Naive Bayes / Logistic Regression) against a lightweight transformer (DistilBERT) for binary fake-news classification, with focus on accuracy vs. inference speed trade-off.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>LIAR dataset</strong> — 12,800 labelled short statements (Kaggle)</li>
+        <li><strong>FakeNewsNet</strong> — PolitiFact and GossipCop articles</li>
+        <li><strong>ISOT Fake News Dataset</strong> — University of Victoria, easy to use</li>
+      </ul>
+      <h3>Model Recommendation</h3>
+      <ul>
+        <li><strong>Phase 1:</strong> TF-IDF + Logistic Regression — easy to implement and explain</li>
+        <li><strong>Phase 2:</strong> DistilBERT via HuggingFace (if GPU available) — better accuracy</li>
+        <li>Report Precision, Recall, F1 and AUC-ROC for both</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP form sends article text via POST to Flask endpoint <code>/predict</code></li>
+        <li>Flask returns <code>{"label":"FAKE","confidence":0.87}</code></li>
+        <li>PHP displays result with colour indicator (red=fake, green=real)</li>
+        <li>Save each prediction + source text in MySQL for history log</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Text/URL input form and result display (PHP)</li>
+        <li>Confidence bar chart per prediction</li>
+        <li>Prediction history table with search</li>
+        <li>Admin statistics: % fake vs real over time</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Benchmarking classical vs transformer NLP for fake news on a chosen dataset; design of a usable, lightweight browser-based tool accessible without deep learning expertise.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">Springer CCIS Proceedings</span>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">IEEE ICSC</span>
+      <span class="venue-tag">IJCA (zero APC)</span>
+    `
+  },
+  {
+    title: "Student Performance Prediction System",
+    domain: "education", domainLabel: "Education",
+    icon: "ti-school", iconBg: "#E1F5EE", iconColor: "#0F6E56",
+    desc: "Faculty enter marks and attendance via PHP admin panel; Python ML model predicts at-risk students and flags them for early intervention.",
+    php: ["Faculty login","Data entry","Reports"], py: ["Pandas, scikit-learn","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>Faculty log into a PHP dashboard to enter marks, attendance percentages, and assignment scores. PHP sends student data to a Python Flask API that runs a trained ML model and returns a pass/fail risk prediction. At-risk students are highlighted for early counselling.</p>
+      <h3>Research Objective</h3>
+      <p>Identify which combination of academic features (attendance, internal marks, assignment scores) best predicts end-semester performance, and compare ML models for early warning accuracy.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>UCI Student Performance Dataset</strong> — Portuguese secondary school data, widely used</li>
+        <li><strong>Self-collected</strong> — use your own college's historical data (anonymised); most publishable</li>
+        <li><strong>Kaggle: Students Performance in Exams</strong> — simple, good for prototyping</li>
+      </ul>
+      <h3>Model Recommendation</h3>
+      <ul>
+        <li>Compare <strong>Decision Tree, Random Forest, and Logistic Regression</strong></li>
+        <li>Use cross-validation (k=5) and report accuracy, precision, recall</li>
+        <li>Feature importance analysis (from Random Forest) is a strong research finding</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP sends a student record as JSON: <code>{"attendance":72,"marks":[55,60,48]}</code></li>
+        <li>Flask <code>/predict</code> endpoint returns <code>{"risk":"HIGH","probability":0.78}</code></li>
+        <li>PHP colours the row red/amber/green on the dashboard</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Faculty login and student data entry (PHP)</li>
+        <li>Batch prediction — upload CSV and predict all students at once</li>
+        <li>At-risk dashboard with filter by department/semester</li>
+        <li>Trend charts for attendance vs performance correlation</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Feature importance study for student performance in an Indian college context; comparison of ML models for early intervention systems.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">Education and Information Technologies (Springer)</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Resume Screening Assistant",
+    domain: "nlp", domainLabel: "NLP",
+    icon: "ti-file-text", iconBg: "#EEEDFE", iconColor: "#534AB7",
+    desc: "PHP upload portal for HR to post jobs and applicants to submit resumes (PDF); Python extracts skills, ranks candidates, and returns a shortlist.",
+    php: ["Job postings","Resume upload","Ranked results"], py: ["PyPDF2, spaCy NER","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>HR managers post job descriptions on a PHP portal. Applicants upload PDF resumes. Python extracts skills and experience using NLP, computes a match score against the job description, and returns a ranked shortlist via Flask API.</p>
+      <h3>Research Objective</h3>
+      <p>Evaluate Named Entity Recognition (NER) approaches for automated skill extraction from resumes and compare keyword-matching vs. cosine similarity (TF-IDF vectors) for candidate ranking accuracy.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>Kaggle Resume Dataset</strong> — 2,400+ resumes across 25 categories</li>
+        <li><strong>LinkedIn job postings dataset</strong> — for job description side</li>
+        <li>Collect real anonymised resumes from seniors/graduates (with consent)</li>
+      </ul>
+      <h3>NLP Pipeline</h3>
+      <ul>
+        <li><strong>PDF parsing:</strong> PyPDF2 or pdfminer.six to extract raw text</li>
+        <li><strong>Skill extraction:</strong> spaCy with a custom skills entity ruler (load a skills list)</li>
+        <li><strong>Ranking:</strong> TF-IDF cosine similarity between resume and job description</li>
+        <li><strong>Optional:</strong> sentence-transformers for semantic similarity (stronger research angle)</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP uploads PDF to server and sends file path + job ID to Flask</li>
+        <li>Flask returns <code>{"name":"Ahmed","score":0.82,"skills":["Python","SQL"]}</code></li>
+        <li>PHP displays sorted candidate table with skill badges</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>HR login, job posting form, applicant upload portal (PHP)</li>
+        <li>Ranked candidate list with extracted skills highlighted</li>
+        <li>Side-by-side resume vs job description skill gap view</li>
+        <li>Bulk upload and batch ranking</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Comparison of keyword-matching vs. semantic similarity for resume ranking; custom NER for Indian technical resume formats.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">ACM SIGIR workshops</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Sign Language to Text Translator",
+    domain: "health", domainLabel: "Accessibility",
+    icon: "ti-hand-finger", iconBg: "#FBEAF0", iconColor: "#993556",
+    desc: "PHP webcam page streams frames; Python (OpenCV + MediaPipe) recognises hand gestures in real time and returns the corresponding letter or word.",
+    php: ["Webcam capture UI","Session management","Output display"], py: ["MediaPipe, OpenCV","Flask / WebSocket"], db: ["SQLite"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP page accesses the browser webcam (via JavaScript/HTML5). Captured frames are sent to a Python Flask server that uses MediaPipe Hands to detect hand landmarks and a trained classifier to map gestures to letters (ASL or ISL alphabet).</p>
+      <h3>Research Objective</h3>
+      <p>Build and evaluate a real-time hand gesture recognition system for sign language alphabets using MediaPipe landmark features, comparing ML classifiers (Random Forest, SVM, KNN) on recognition accuracy and latency.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>ASL Alphabet Dataset</strong> — Kaggle, 87,000 images, 29 classes</li>
+        <li><strong>ISL (Indian Sign Language)</strong> — INCLUDE dataset (IIT Bombay)</li>
+        <li><strong>Self-collected</strong> — capture your own using MediaPipe (most novel)</li>
+      </ul>
+      <h3>Implementation Approach</h3>
+      <ul>
+        <li>MediaPipe extracts 21 hand landmarks (x, y, z) → 63 features per frame</li>
+        <li>Train Random Forest or SVM on these features (no deep learning needed)</li>
+        <li>Flask endpoint receives a base64 image, processes it, returns predicted letter</li>
+        <li>JavaScript polls Flask every 300ms and updates the PHP page output</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP page uses JS <code>canvas.toDataURL()</code> to capture webcam frame</li>
+        <li>AJAX POST sends base64 image to Flask <code>/predict</code></li>
+        <li>Flask returns <code>{"letter":"A","confidence":0.94}</code></li>
+        <li>PHP div updates in real time showing the detected letter</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Live webcam view with detected letter overlay</li>
+        <li>Letter-by-letter word builder (press space to confirm)</li>
+        <li>Gesture history log stored in SQLite</li>
+        <li>Accuracy report page for demo purposes</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Lightweight landmark-based sign language recognition without a GPU; comparison of classifiers on ISL/ASL landmark features; browser-based accessibility tool design.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">IEEE ICACCI</span>
+      <span class="venue-tag">Springer LNCS (ICVGIP)</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Sentiment-Based Review Aggregator",
+    domain: "nlp", domainLabel: "NLP",
+    icon: "ti-star", iconBg: "#EEEDFE", iconColor: "#534AB7",
+    desc: "Users submit product reviews via PHP; Python sentiment analysis scores and categorises them, showing aggregate dashboards.",
+    php: ["Review submission","Product pages","Charts (Chart.js)"], py: ["NLTK VADER / transformers","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP e-commerce style page lets users submit text reviews for products. Python analyses each review for sentiment (positive / neutral / negative) and returns a score. An aggregate dashboard shows sentiment trends over time using Chart.js.</p>
+      <h3>Research Objective</h3>
+      <p>Compare lexicon-based (VADER) and transformer-based (DistilBERT) sentiment analysis for product reviews in an Indian English context, evaluating accuracy, speed, and suitability for deployment on low-resource servers.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>Amazon Product Reviews</strong> — Kaggle, millions of labelled reviews</li>
+        <li><strong>Flipkart Product Reviews</strong> — available on Kaggle (India-specific)</li>
+        <li><strong>IMDb Movie Reviews</strong> — classic binary sentiment dataset</li>
+      </ul>
+      <h3>Model Recommendation</h3>
+      <ul>
+        <li><strong>VADER</strong> — rule-based, no training needed, fast, works well for short reviews</li>
+        <li><strong>DistilBERT</strong> (HuggingFace) — better for nuanced text, needs more compute</li>
+        <li>Compare both and report F1 on a held-out test set</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP POSTs review text to Flask <code>/analyse</code></li>
+        <li>Flask returns <code>{"sentiment":"positive","score":0.76}</code></li>
+        <li>PHP stores result in MySQL and refreshes the dashboard chart</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Product listing and review submission form (PHP)</li>
+        <li>Colour-coded sentiment badge on each review</li>
+        <li>Aggregate pie chart and time-series line chart (Chart.js)</li>
+        <li>Admin view of most-positive and most-negative reviewed products</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>VADER vs transformer comparison on Indian English product reviews; design of a real-time review analytics dashboard for small e-commerce contexts.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">IJCA</span>
+      <span class="venue-tag">IEEE ICICT</span>
+    `
+  },
+  {
+    title: "Secure File Sharing with Encryption",
+    domain: "security", domainLabel: "Security",
+    icon: "ti-lock", iconBg: "#FAECE7", iconColor: "#712B13",
+    desc: "PHP portal for authenticated file upload/download; Python handles AES-256 encryption/decryption and audit logs with role-based access control.",
+    php: ["Auth, file manager UI","Audit trail display"], py: ["PyCryptodome","Flask API","RBAC logic"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP portal where users upload files that are encrypted by a Python backend (AES-256 via PyCryptodome) before storage. Downloads are decrypted on-the-fly. Role-based access control (RBAC) ensures only authorised users access specific files. All actions are logged in an audit trail.</p>
+      <h3>Research Objective</h3>
+      <p>Design and evaluate a lightweight, role-based encrypted file sharing system for institutional use, comparing AES-256 encryption overhead against unencrypted storage and assessing RBAC policy effectiveness.</p>
+      <h3>System Design</h3>
+      <ul>
+        <li><strong>Roles:</strong> Admin, Faculty, Student — each with different file access permissions</li>
+        <li><strong>Encryption:</strong> AES-256 in CBC mode; each file gets a unique IV stored in MySQL</li>
+        <li><strong>Key management:</strong> derive per-user encryption key from password using PBKDF2</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP sends file bytes (base64) and user role to Flask <code>/encrypt</code></li>
+        <li>Flask encrypts, returns encrypted bytes + IV; PHP stores in <code>/uploads/</code></li>
+        <li>On download, PHP sends encrypted file to Flask <code>/decrypt</code>; Flask returns plain file</li>
+        <li>All events (upload, download, failed access) logged to MySQL audit table</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Login with role assignment (PHP sessions)</li>
+        <li>File upload/download manager with permission check</li>
+        <li>Admin audit log viewer with timestamp and user ID</li>
+        <li>Performance test: measure encrypt/decrypt time vs file size</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Performance benchmarking of AES-256 encryption overhead in a PHP/Python web system; RBAC policy design for educational file sharing; security analysis against common threats.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">IEEE ICCCNT</span>
+      <span class="venue-tag">Springer CCIS</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Local Language Spell Checker (Urdu / Telugu)",
+    domain: "nlp", domainLabel: "NLP",
+    icon: "ti-language", iconBg: "#EEEDFE", iconColor: "#534AB7",
+    desc: "PHP text editor where users type in Urdu or Telugu; Python uses a phonetic dictionary and edit-distance to suggest corrections.",
+    php: ["Rich text editor","Suggestion dropdown","Word stats"], py: ["Custom dictionary","Levenshtein distance","Flask API"], db: ["MySQL (word corpus)"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP rich-text editor (contenteditable or CodeMirror) lets users type in Urdu (Nastaliq script) or Telugu (Telugu script). On each word, PHP calls a Python Flask API that checks the word against a corpus and returns spelling suggestions using edit-distance or phonetic matching.</p>
+      <h3>Research Objective</h3>
+      <p>Build and evaluate a spell-checking system for a low-resource Indian language, comparing edit-distance (Levenshtein), phonetic similarity, and n-gram language model approaches for suggestion quality.</p>
+      <h3>Corpus Building</h3>
+      <ul>
+        <li><strong>Urdu:</strong> Urdu Digest corpus, CRULP wordlist, OpenSubtitles Urdu</li>
+        <li><strong>Telugu:</strong> Telugu Wikipedia dump, TDIL corpus (Govt of India, free)</li>
+        <li>Tokenise, deduplicate, and store word frequencies in MySQL</li>
+      </ul>
+      <h3>Algorithm Design</h3>
+      <ul>
+        <li><strong>Step 1:</strong> Check if word exists in corpus (exact match)</li>
+        <li><strong>Step 2:</strong> If not found, compute Levenshtein distance to top-N corpus words</li>
+        <li><strong>Step 3:</strong> Rank suggestions by edit distance + word frequency</li>
+        <li><strong>Optional:</strong> Add phonetic normalisation for Urdu transliteration errors</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP editor sends typed word to Flask <code>/check</code> on spacebar/pause</li>
+        <li>Flask returns <code>{"correct":false,"suggestions":["word1","word2","word3"]}</code></li>
+        <li>PHP shows a dropdown of suggestions; user clicks to auto-correct</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Unicode-aware text editor with underline for unknown words</li>
+        <li>Suggestion dropdown on click</li>
+        <li>Word frequency statistics dashboard</li>
+        <li>User-contributed word additions (moderated by admin)</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Novel spell-checker for Urdu or Telugu using edit-distance + frequency ranking; corpus construction methodology; comparison of suggestion algorithms on low-resource language data.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">ACL Anthology (workshop papers)</span>
+      <span class="venue-tag">Springer LNCS (ICON conference)</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Traffic Violation Detection Dashboard",
+    domain: "security", domainLabel: "Security / Civic Tech",
+    icon: "ti-traffic-cone", iconBg: "#FAECE7", iconColor: "#712B13",
+    desc: "PHP admin dashboard for uploading traffic camera images; Python (YOLOv8) detects violations and logs them with timestamps.",
+    php: ["Upload UI","Violation log table","Statistics"], py: ["YOLOv8 inference","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP admin dashboard allows traffic officials to upload images or short video clips. Python runs YOLOv8 object detection to identify violations (no helmet, triple riding, signal jumping) and returns bounding box annotations and violation labels. Results are logged with timestamps in MySQL.</p>
+      <h3>Research Objective</h3>
+      <p>Fine-tune YOLOv8 for Indian traffic violation detection and evaluate detection accuracy (mAP) on a custom or publicly available dataset, comparing performance across violation types.</p>
+      <h3>Dataset Options</h3>
+      <ul>
+        <li><strong>Roboflow Traffic Datasets</strong> — helmet detection, vehicle counting (free to download)</li>
+        <li><strong>IDD (India Driving Dataset)</strong> — IIT Hyderabad, realistic Indian road scenes</li>
+        <li><strong>Self-annotated:</strong> capture images near campus and annotate using Roboflow (free tier)</li>
+      </ul>
+      <h3>YOLOv8 Fine-Tuning Steps</h3>
+      <ul>
+        <li>Install <code>ultralytics</code> library (<code>pip install ultralytics</code>)</li>
+        <li>Annotate images in YOLO format (Roboflow exports this automatically)</li>
+        <li>Fine-tune: <code>yolo train model=yolov8n.pt data=traffic.yaml epochs=50</code></li>
+        <li>Export best weights and load in Flask for inference</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP uploads image to server; sends file path to Flask <code>/detect</code></li>
+        <li>Flask returns <code>{"violations":["no_helmet"],"confidence":0.91,"annotated_img":"..."}</code></li>
+        <li>PHP saves violation record in MySQL and displays annotated image</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Image/video upload interface (PHP)</li>
+        <li>Annotated image display with bounding boxes</li>
+        <li>Violation log table with date, type, confidence</li>
+        <li>Statistics: violations by type, by day, by camera location</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>YOLOv8 fine-tuning for Indian traffic conditions; mAP benchmarking across violation types; design of a practical municipal traffic monitoring dashboard.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">IEEE ITSC</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "E-Grievance Management with Priority Scoring",
+    domain: "social", domainLabel: "Social / Civic",
+    icon: "ti-alert-circle", iconBg: "#E1F5EE", iconColor: "#0F6E56",
+    desc: "Citizens submit complaints via PHP forms; Python NLP classifies complaint type and assigns urgency score; officials see a prioritised queue.",
+    php: ["Citizen portal","Official dashboard","Status tracking"], py: ["Text classification","Urgency scoring","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>Citizens submit complaints (roads, water, electricity, etc.) through a PHP portal. Python NLP classifies the complaint into a department category and assigns an urgency score (1–5) based on keywords and sentiment. Officials see a real-time prioritised queue sorted by urgency.</p>
+      <h3>Research Objective</h3>
+      <p>Design an NLP pipeline for automated grievance classification and urgency estimation; evaluate multi-class text classifiers and urgency scoring methods for e-governance applications.</p>
+      <h3>Training Data Collection</h3>
+      <ul>
+        <li>Use publicly available <strong>CPGRAMS data</strong> (India's central grievance portal) if accessible</li>
+        <li>Scrape <strong>Twitter/X civic complaint threads</strong> (BMC, GHMC) with labels</li>
+        <li><strong>Manually create</strong> 500–1000 sample complaints across 6–8 categories (feasible for UG project)</li>
+      </ul>
+      <h3>NLP Pipeline</h3>
+      <ul>
+        <li><strong>Preprocessing:</strong> lowercase, remove stopwords, TF-IDF vectorisation</li>
+        <li><strong>Classification:</strong> Multinomial Naive Bayes or SVM for department routing</li>
+        <li><strong>Urgency scoring:</strong> rule-based (keywords: "flood", "fire", "no water 3 days") + sentiment score</li>
+        <li>Combine category confidence + urgency into a final priority score</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP sends complaint text to Flask <code>/classify</code></li>
+        <li>Flask returns <code>{"category":"water","urgency":4,"priority_score":8.2}</code></li>
+        <li>PHP stores in MySQL and re-renders official dashboard sorted by priority</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Citizen complaint submission form with photo upload (PHP)</li>
+        <li>Official department login with sorted grievance queue</li>
+        <li>Status update (pending → in-progress → resolved) with SMS/email alert</li>
+        <li>Analytics: complaints by category, average resolution time</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>Novel urgency scoring combining NLP classification and rule-based signals; evaluation on Indian civic grievance text; design of an automated triage system for e-governance.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">IEEE ICEGOV</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Crop Disease Detection for Farmers",
+    domain: "social", domainLabel: "Agriculture / Social",
+    icon: "ti-plant", iconBg: "#E1F5EE", iconColor: "#0F6E56",
+    desc: "PHP mobile-friendly page lets farmers upload leaf images; Python CNN (MobileNet transfer learning) identifies the disease and recommends treatment.",
+    php: ["Image upload","Results page","Treatment guide"], py: ["TensorFlow / PyTorch","Transfer learning","Flask API"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A mobile-friendly PHP page lets farmers take a photo of an affected leaf and upload it. Python runs transfer learning inference (MobileNetV2 fine-tuned on PlantVillage) to identify the disease and return a treatment recommendation from a pre-built knowledge base.</p>
+      <h3>Research Objective</h3>
+      <p>Fine-tune a lightweight CNN (MobileNetV2 vs EfficientNet-B0) for crop disease classification and evaluate accuracy, inference time, and suitability for low-bandwidth rural deployment.</p>
+      <h3>Dataset</h3>
+      <ul>
+        <li><strong>PlantVillage Dataset</strong> — 54,000+ labelled leaf images, 38 disease classes (Kaggle)</li>
+        <li>Select 4–6 crops most relevant to Telangana farmers (rice, cotton, tomato, chilli)</li>
+        <li>Augment with rotations and brightness changes to improve generalisation</li>
+      </ul>
+      <h3>Model Fine-Tuning Steps</h3>
+      <ul>
+        <li>Load MobileNetV2 with ImageNet weights (TensorFlow/Keras)</li>
+        <li>Freeze base layers; add Dense(128) + Softmax output for your classes</li>
+        <li>Train for 20–30 epochs; unfreeze top 20 layers for fine-tuning</li>
+        <li>Save as <code>.h5</code> and load in Flask for inference</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>PHP uploads image; sends base64 or file path to Flask <code>/predict</code></li>
+        <li>Flask returns <code>{"disease":"Early Blight","confidence":0.93,"treatment":"..."}</code></li>
+        <li>PHP displays disease name, confidence bar, and treatment steps</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Mobile-first upload page (responsive PHP/CSS)</li>
+        <li>Results page: disease name, confidence, affected area visual</li>
+        <li>Treatment guide in English + Telugu/Urdu (bilingual)</li>
+        <li>Disease history log per farmer (login required)</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>MobileNetV2 vs EfficientNet comparison on PlantVillage subset for Telangana crops; mobile-first deployment design for low-bandwidth environments; bilingual treatment recommendation system.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">Computers and Electronics in Agriculture (Elsevier)</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  },
+  {
+    title: "Online Exam Integrity Monitor",
+    domain: "education", domainLabel: "Education / Security",
+    icon: "ti-camera", iconBg: "#E1F5EE", iconColor: "#0F6E56",
+    desc: "PHP exam platform integrates a webcam feed; Python (OpenCV + dlib) detects face count, gaze direction, and tab-switch events, alerting invigilators in real time.",
+    php: ["Exam UI","Invigilator dashboard","Alert log"], py: ["Face detection","Gaze estimation","Flask / WebSocket"], db: ["MySQL"],
+    guide: `
+      <h3>Project Overview</h3>
+      <p>A PHP-based online exam interface captures webcam frames via JavaScript. Python detects: (1) number of faces in frame, (2) gaze direction (looking away), (3) JavaScript detects tab switches and fullscreen exit. Alerts are sent to an invigilator dashboard in near real-time.</p>
+      <h3>Research Objective</h3>
+      <p>Design and evaluate a lightweight browser-based proctoring system; measure false positive/negative rates for face absence and gaze deviation alerts; assess usability impact on genuine exam-takers.</p>
+      <h3>Computer Vision Approach</h3>
+      <ul>
+        <li><strong>Face detection:</strong> OpenCV Haar cascade or dlib HOG detector (fast, no GPU)</li>
+        <li><strong>Face count alert:</strong> trigger if 0 faces (absent) or 2+ faces (another person)</li>
+        <li><strong>Gaze estimation:</strong> dlib 68-point landmarks → compute eye aspect ratio and iris position</li>
+        <li><strong>Tab switch:</strong> JavaScript <code>visibilitychange</code> event sent to PHP via AJAX</li>
+      </ul>
+      <h3>PHP ↔ Python Integration</h3>
+      <ul>
+        <li>JavaScript captures frame every 2s; AJAX POSTs base64 image to Flask <code>/monitor</code></li>
+        <li>Flask returns <code>{"faces":1,"gaze":"forward","alert":false}</code></li>
+        <li>PHP logs any alerts to MySQL; invigilator dashboard auto-refreshes every 5s</li>
+      </ul>
+      <h3>Key Features to Build</h3>
+      <ul>
+        <li>Student exam interface with webcam preview and countdown timer (PHP)</li>
+        <li>Real-time invigilator dashboard: grid of students, red highlight on alert</li>
+        <li>Alert log: timestamp, student ID, alert type (no face / gaze / tab switch)</li>
+        <li>Post-exam report: total alerts per student</li>
+      </ul>
+      <h3>Ethical Considerations</h3>
+      <ul>
+        <li>Obtain informed consent from students before use</li>
+        <li>Store only alert metadata, not video footage</li>
+        <li>Allow students to appeal false positives</li>
+        <li>Disclose clearly in the paper that this is a prototype, not a deployed system</li>
+      </ul>
+      <h3>Research Contribution</h3>
+      <p>False-positive analysis of lightweight (no-GPU) face and gaze detection for proctoring; design of an ethical, privacy-preserving alert system; usability study with student participants.</p>
+      <h3>Suitable Publication Venues</h3>
+      <span class="venue-tag">ICIETS 2027</span>
+      <span class="venue-tag">IEEE EDUCON</span>
+      <span class="venue-tag">Springer LNNS</span>
+      <span class="venue-tag">IJCA</span>
+    `
+  }
+];
+
+let current = 'all';
+
+function filter(domain, btn) {
+  current = domain;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function renderCards() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  projects.filter(p => current === 'all' || p.domain === current).forEach((p, i) => {
+    const idx = projects.indexOf(p);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="icon-wrap" style="background:${p.iconBg}">
+          <i class="ti ${p.icon}" style="color:${p.iconColor}" aria-hidden="true"></i>
+        </div>
+        <div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-domain">${p.domainLabel}</div>
+        </div>
+      </div>
+      <div class="card-desc">${p.desc}</div>
+      <div class="tech-row">
+        ${p.php.map(t=>`<span class="badge php-badge">PHP: ${t}</span>`).join('')}
+        ${p.py.map(t=>`<span class="badge py-badge">Py: ${t}</span>`).join('')}
+        ${p.db.map(t=>`<span class="badge db-badge">${t}</span>`).join('')}
+      </div>
+      <button class="explore-btn" onclick="openProject(${idx})">
+        <span>Explore this project</span>
+        <i class="ti ti-arrow-right" aria-hidden="true"></i>
+      </button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openProject(idx) {
+  const p = projects[idx];
+  document.getElementById('m-title').textContent = p.title;
+  document.getElementById('m-sub').textContent = p.domainLabel;
+  document.getElementById('m-body').innerHTML = p.guide;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function bgClose(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+renderCards();
+</script>
+</body>
+</html>
